@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/google/go-github/github"
@@ -30,7 +29,8 @@ func main() {
 	}
 }
 
-var chinaCities = []string{
+var chineseSpeakingLocations = []string{
+	"china",
 	"beijing",
 	"shanghai",
 	"hangzhou",
@@ -38,12 +38,14 @@ var chinaCities = []string{
 	"shenzhen",
 	"guangzhou",
 
+	"taipei",
 	"taiwan",
 	"hong kong",
 	"singapore",
-}
 
-var locRegexp = regexp.MustCompile("[^,]+(, [^,]+)*$")
+	"everywhere",
+	"earth",
+}
 
 func inChina(u *github.User) bool {
 	loc := v(u.Location)
@@ -51,12 +53,8 @@ func inChina(u *github.User) bool {
 		// don't want to miss anyone
 		return true
 	}
-	matched := locRegexp.FindStringSubmatch(loc)
-	if len(matched) == 2 && matched[1] == ", China" {
-		return true
-	}
-	for _, city := range chinaCities {
-		if strings.HasPrefix(strings.ToLower(loc), city) {
+	for _, city := range chineseSpeakingLocations {
+		if strings.Contains(strings.ToLower(loc), city) {
 			return true
 		}
 	}
